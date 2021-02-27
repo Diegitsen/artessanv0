@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "529007239990",
+    "project_id": "artessan-54268",
+    "storage_bucket": "artessan-54268.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529007239990:android:9352a28c8bd4f46b0e8997",
+        "android_client_info": {
+          "package_name": "com.diegitsen.artessan_v0"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "529007239990-1ugvqul6b4dn671j9c05jvvh3o1eir1q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvWqfB91H-IDJKEJU8E1LZcNJol2Mjokk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "529007239990-1ugvqul6b4dn671j9c05jvvh3o1eir1q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
