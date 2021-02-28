@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:artessan_v0/models/user.dart';
+import 'package:artessan_v0/pages/CategoryPage.dart';
+import 'package:artessan_v0/pages/SubcategoryPage.dart';
 import 'package:artessan_v0/widgets/HeaderWidget.dart';
 import 'package:artessan_v0/widgets/ProgressWidget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,6 +36,11 @@ class _UploadPageState extends State<UploadPage> {
   String postId = Uuid().v4();
   TextEditingController locationTextEditingController = TextEditingController();
   TextEditingController descriptionTextEditingController = TextEditingController();
+  int _groupValue = -1;
+  String conditionWay = "Seleccionar +";
+  String categorySelected = "Selecciona una categoría";
+  String subcategorySelected = "Selecciona una subcategoría";
+  bool aux = false;
 
   captureImageWithCamera() async{
     Navigator.pop(context);
@@ -165,7 +173,7 @@ class _UploadPageState extends State<UploadPage> {
                   ),
                   Divider(color: Colors.white,),
                   GestureDetector(
-                    onTap: ()=>{print("asd")},
+                    onTap: ()=>onUbicationModal(),
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 10.0),
                       child: Row(
@@ -177,7 +185,7 @@ class _UploadPageState extends State<UploadPage> {
                             ),
                           ),
                           Text(
-                            "Seleccionar ubicación +",
+                            locationTextEditingController.text == "" ? "Agregue su ubicación" : locationTextEditingController.text,
                             style: TextStyle(fontSize: 15, color: Colors.grey),
                           ),
                         ],
@@ -186,7 +194,7 @@ class _UploadPageState extends State<UploadPage> {
                   ),
                   Divider(),
                   GestureDetector(
-                    onTap: ()=>{print("asd")},
+                    onTap: ()=>goToCategory(context),
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 10.0),
                       child: Row(
@@ -198,7 +206,7 @@ class _UploadPageState extends State<UploadPage> {
                             ),
                           ),
                           Text(
-                            "Seleccionar categoría +",
+                            categorySelected,
                             style: TextStyle(fontSize: 15, color: Colors.grey),
                           ),
                         ],
@@ -207,7 +215,7 @@ class _UploadPageState extends State<UploadPage> {
                   ),
                   Divider(),
                   GestureDetector(
-                    onTap: ()=>{print("asd")},
+                    onTap: ()=>goToSubcategory(context),
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 10.0),
                       child: Row(
@@ -219,7 +227,7 @@ class _UploadPageState extends State<UploadPage> {
                             ),
                           ),
                           Text(
-                            "Seleccionar subcategoría +",
+                            subcategorySelected,
                             style: TextStyle(fontSize: 15, color: Colors.grey),
                           ),
                         ],
@@ -240,7 +248,7 @@ class _UploadPageState extends State<UploadPage> {
                             ),
                           ),
                           Text(
-                            "Usado - aceptable",
+                            conditionWay,
                             style: TextStyle(fontSize: 15, color: Colors.grey),
                           ),
                         ],
@@ -248,24 +256,36 @@ class _UploadPageState extends State<UploadPage> {
                     ),
                   ),
                   Divider(),
-                  GestureDetector(
-                    onTap: ()=>{print("asd")},
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 10.0),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(
-                              "Precio",
-                              style: TextStyle(fontSize: 17),
-                            ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            "Precio",
+                            style: TextStyle(fontSize: 17),
                           ),
-                          Text(
-                            "S/",
-                            style: TextStyle(fontSize: 15, color: Colors.grey),
+                        ),
+                        Container(
+                          width: 80,
+                          child: Row(
+                            children: [
+                              Text("S/"),
+                              VerticalDivider(color: Colors.white,),
+                              Flexible(
+                                child: TextField(
+                                  keyboardType: TextInputType.number,
+                                  style: TextStyle(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    hintText: "",
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        )
+                      ],
                     ),
                   ),
                   Divider(),
@@ -329,17 +349,154 @@ class _UploadPageState extends State<UploadPage> {
         ));
   }
 
+
+
   void onConditionModal() {
     showModalBottomSheet(context: context, builder: (context) {
-      return Column(
-        children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.ac_unit),
-            title: Text("hi"),
-          )
-        ],
+      return Container(
+        height: 360,
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Align(
+                alignment: Alignment.centerLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child:  Text("Condición", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.left,),
+              ),
+            ),
+            _myRadioButton(
+              title: "Nueva",
+              value: 0,
+              onChanged: (newValue) => {
+                setState(() => _groupValue = newValue),
+                Navigator.of(context).pop(),
+                conditionWay = "Nueva"
+              },
+            ),
+            _myRadioButton(
+              title: "Como nueva",
+              value: 1,
+              onChanged: (newValue) => {
+                setState(() => _groupValue = newValue),
+                Navigator.of(context).pop(),
+                conditionWay = "Como nueva"
+              },
+            ),
+            _myRadioButton(
+              title: "Usado - Excelente",
+              value: 2,
+              onChanged: (newValue) => {
+                setState(() => _groupValue = newValue),
+                Navigator.of(context).pop(),
+                conditionWay = "Como nueva"
+              },
+            ),
+            _myRadioButton(
+              title: "Usado - Buen estado",
+              value: 3,
+              onChanged: (newValue) => {
+                setState(() => _groupValue = newValue),
+                Navigator.of(context).pop(),
+                conditionWay = "Usado - Buen estado"
+              },
+            ),
+            _myRadioButton(
+              title: "Usado - Justo",
+              value: 4,
+              onChanged: (newValue) => {
+                setState(() => _groupValue = newValue),
+                Navigator.of(context).pop(),
+                conditionWay = "Usado - Justo"
+              },
+            ),
+          ],
+        ),
       );
     });
+  }
+
+  void onUbicationModal() {
+    showModalBottomSheet(context: context, builder: (context) {
+      return Container(
+        height: 500,
+        child: Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            children: <Widget>[
+              Align(
+                alignment: Alignment.centerLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child:  Text("Ubicación", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.left,),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                      child: TextField(
+                        maxLengthEnforced: true,
+                        style: TextStyle(color: Colors.black),
+                        controller: locationTextEditingController,
+                        decoration: InputDecoration(
+                          hintText: "Ingrese su ubicación",
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                      )
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.my_location),
+                    iconSize: 30,
+                    onPressed: gUserCurrentLocation,
+                  )
+                ],
+              ),
+              Divider(color: Colors.white,),
+              SizedBox(
+                width: double.infinity,
+                height: 45,
+                child: RaisedButton(
+                  child: Text("Aceptar", style: TextStyle(color: Colors.white),),
+                  color: Colors.black,
+                  onPressed: ()=>Navigator.of(context).pop(),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  goToCategory2(BuildContext context) async {
+
+
+    await Navigator.of(context).push(PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2){
+          return FadeTransition(
+            opacity: animation1,
+            child: CategoryPage(),);
+        }));
+  }
+
+  goToCategory(BuildContext context) async {
+    final category = await Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryPage()));
+    setState(() {
+      categorySelected = category;
+    });
+  }
+
+  goToSubcategory(BuildContext context) async {
+    final subcategory = await Navigator.push(context, MaterialPageRoute(builder: (context) => SubcategoryPage()));
+    setState(() {
+      subcategorySelected = subcategory;
+    });
+  }
+
+  Widget _myRadioButton({String title, int value, Function onChanged}) {
+    return RadioListTile(
+      value: value,
+      groupValue: _groupValue,
+      onChanged: onChanged,
+      title: Text(title),
+      activeColor: Colors.black,
+    );
   }
 
   GestureDetector uploadPicFrame() {
