@@ -31,7 +31,11 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
 
-  File file;
+  File filesito;
+  File file1;
+  File file2;
+  File file3;
+  File file4;
   bool uploading = false;
   String postId = Uuid().v4();
   TextEditingController locationTextEditingController = TextEditingController();
@@ -42,8 +46,9 @@ class _UploadPageState extends State<UploadPage> {
   String subcategorySelected = "Selecciona una subcategoría";
   bool aux = false;
 
-  captureImageWithCamera() async{
+  captureImageWithCamera(int index) async{
     Navigator.pop(context);
+
     File imageFile = await ImagePicker.pickImage(
         source: ImageSource.camera,
         maxHeight: 680,
@@ -75,11 +80,24 @@ class _UploadPageState extends State<UploadPage> {
     );
 
     setState(() {
-      this.file = croppedFile;
+      switch(index){
+        case 1:
+          file1 = croppedFile;
+          break;
+        case 2:
+          file2 = croppedFile;
+          break;
+        case 3:
+          file3 = croppedFile;
+          break;
+        case 4:
+          file4 = croppedFile;
+          break;
+      }
     });
   }
 
-  pickImageFromGallery() async{
+  pickImageFromGallery(int index) async{
     Navigator.pop(context);
     File imageFile = await ImagePicker.pickImage(
       source: ImageSource.gallery,
@@ -106,11 +124,24 @@ class _UploadPageState extends State<UploadPage> {
     );
 
     setState(() {
-      this.file = croppedFile;
+      switch(index){
+        case 1:
+          file1 = croppedFile;
+          break;
+        case 2:
+          file2 = croppedFile;
+          break;
+        case 3:
+          file3 = croppedFile;
+          break;
+        case 4:
+          file4 = croppedFile;
+          break;
+      }
     });
   }
 
-  takeImage(mContext){
+  takeImage(mContext, int index){
     return showDialog(
         context: mContext,
         builder: (context){
@@ -122,15 +153,15 @@ class _UploadPageState extends State<UploadPage> {
             actions: <Widget>[
               CupertinoDialogAction(
                 child: Text("Toma una foto", style: TextStyle(color: Colors.black, ),),
-                onPressed: captureImageWithCamera,
+                onPressed: () => captureImageWithCamera(index),
               ),
               CupertinoDialogAction(
                 child: Text("Selecciona una foto", style: TextStyle(color: Colors.black, ),),
-                onPressed: pickImageFromGallery,
+                onPressed: () =>  pickImageFromGallery(index),
               ),
               CupertinoDialogAction(
                 child: Text("Cancelar", style: TextStyle(color: Colors.black, ),),
-                onPressed: pickImageFromGallery,
+                onPressed: () =>  pickImageFromGallery(index),
               ),
             ],
           );
@@ -341,15 +372,13 @@ class _UploadPageState extends State<UploadPage> {
         child: new ListView(
           scrollDirection: Axis.horizontal,
           children: <Widget>[
-            uploadPicFrame(),
-            uploadPicFrame(),
-            uploadPicFrame(),
-            uploadPicFrame()
+            uploadPicFrame(1),
+            uploadPicFrame(2),
+            uploadPicFrame(3),
+            uploadPicFrame(4)
           ],
         ));
   }
-
-
 
   void onConditionModal() {
     showModalBottomSheet(context: context, builder: (context) {
@@ -499,24 +528,82 @@ class _UploadPageState extends State<UploadPage> {
     );
   }
 
-  GestureDetector uploadPicFrame() {
+  GestureDetector uploadPicFrame(int index) {
     return GestureDetector(
-      onTap: ()=>{takeImage(context)},
+      onTap: () => {takeImage(context, index)},
       child: Padding(
         padding: const EdgeInsets.only(right: 10),
-        child: Container(
+        child: getImageWidget(index)
+        /*Container(
+                width: 100.0,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: FileImage(file), fit: BoxFit.cover)),
+              ),*/
+      ),
+    );
+  }
+
+  /*
+
+  file1 == null
+            ? Container(
+                width: 100.0,
+                color: Colors.black12,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[Icon(Icons.camera_alt_outlined)],
+                ),
+              )
+            : Container(
           width: 100.0,
-          color: Colors.black12,
+          color: Colors.redAccent,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Icon(Icons.camera_alt_outlined)
-            ],
+            children: <Widget>[Icon(Icons.camera_alt_outlined)],
           ),
+        )
+
+   */
+
+  Widget getImageWidget(int index) {
+    File f;
+
+    switch(index){
+      case 1:
+        f = file1;
+        break;
+      case 2:
+        f = file2;
+        break;
+      case 3:
+        f = file3;
+        break;
+      case 4:
+        f = file4;
+        break;
+    }
+
+    if (f != null) {
+      return Image.file(
+        f,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+      );
+    } else {
+      return Container(
+        width: 100.0,
+        color: Colors.black12,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[Icon(Icons.camera_alt_outlined)],
         ),
-      ),
-    );
+      );
+    }
   }
 
   /*
@@ -540,7 +627,7 @@ class _UploadPageState extends State<UploadPage> {
     locationTextEditingController.clear();
     descriptionTextEditingController.clear();
     setState(() {
-      file = null;
+      filesito = null;
     });
 
   }
@@ -557,10 +644,10 @@ class _UploadPageState extends State<UploadPage> {
   compressingPhoto() async{
     final tDirectory = await getTemporaryDirectory();
     final path = tDirectory.path;
-    ImD.Image mImageFile = ImD.decodeImage(file.readAsBytesSync());
+    ImD.Image mImageFile = ImD.decodeImage(filesito.readAsBytesSync());
     final compressedImageFile = File('$path/img_$postId.jpg')..writeAsBytesSync(ImD.encodeJpg(mImageFile, quality: 90));
     setState(() {
-      file = compressedImageFile;
+      filesito = compressedImageFile;
     });
   }
 
@@ -571,7 +658,7 @@ class _UploadPageState extends State<UploadPage> {
 
     await compressingPhoto();
 
-    String downloadUrl = await uploadPhoto(file);
+    String downloadUrl = await uploadPhoto(filesito);
 
     savePostInfoToFireStore(url: downloadUrl, location: locationTextEditingController.text, description: descriptionTextEditingController.text);
 
@@ -579,7 +666,7 @@ class _UploadPageState extends State<UploadPage> {
     descriptionTextEditingController.clear();
 
     setState(() {
-      file = null;
+      filesito = null;
       uploading = false;
       postId = Uuid().v4();
     });
@@ -630,7 +717,7 @@ class _UploadPageState extends State<UploadPage> {
               child: AspectRatio(
                 aspectRatio: 16/9,
                 child: Container(
-                  decoration: BoxDecoration(image: DecorationImage(image: FileImage(file), fit: BoxFit.cover)),
+                  decoration: BoxDecoration(image: DecorationImage(image: FileImage(filesito), fit: BoxFit.cover)),
                 ),
               ),
             ),
@@ -721,6 +808,6 @@ class _UploadPageState extends State<UploadPage> {
 
   @override
   Widget build(context) {
-    return file == null ? displayUploadScreen() : displayUploadFormScreen();
+    return displayUploadScreen();//file1 == null ? displayUploadScreen() : displayUploadFormScreen();
   }
 }
