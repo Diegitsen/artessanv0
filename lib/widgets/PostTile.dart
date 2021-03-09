@@ -1,5 +1,6 @@
 import 'package:artessan_v0/pages/PostScreenPage.dart';
 import 'package:artessan_v0/widgets/PostWidget.dart';
+import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 
 class PostTile extends StatelessWidget {
@@ -18,7 +19,12 @@ class PostTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: ()=>displayFullPost(context),
-      child: Image.network(post.url),
+      child: Carousel(
+        images: [
+          NetworkImage(post.pics[0])
+        ],
+      ),
+      //Image.network(post.url),
     );
   }
 }

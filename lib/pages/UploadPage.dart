@@ -40,8 +40,13 @@ class _UploadPageState extends State<UploadPage> {
   String postId = Uuid().v4();
   TextEditingController locationTextEditingController = TextEditingController();
   TextEditingController descriptionTextEditingController = TextEditingController();
-  int _groupValue = -1;
+  TextEditingController priceTextEditingController = TextEditingController();
+  int _conditionValue = -1;
+  int _deliveryWayValue = -1;
+  int _paymentWayValue = -1;
   String conditionWay = "Seleccionar +";
+  String deliveryWay = "Seleccionar +";
+  String paymentWay = "Seleccionar +";
   String categorySelected = "Selecciona una categoría";
   String subcategorySelected = "Selecciona una subcategoría";
   bool aux = false;
@@ -173,13 +178,14 @@ class _UploadPageState extends State<UploadPage> {
     return Container(
       color: Theme.of(context).accentColor.withOpacity(0.5),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(15),
         child: Column(
           children: [
             Expanded(
               child: ListView(
                 shrinkWrap: true,
                 children: <Widget>[
+                  uploading ? linearProgress() : Text(""),
                   Divider(),
                   showPicsFrame(),
                   Align(
@@ -306,6 +312,7 @@ class _UploadPageState extends State<UploadPage> {
                               Flexible(
                                 child: TextField(
                                   keyboardType: TextInputType.number,
+                                  controller: priceTextEditingController,
                                   style: TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     hintText: "",
@@ -337,28 +344,79 @@ class _UploadPageState extends State<UploadPage> {
                   ),
                   Divider(color: Colors.white,),
                   GestureDetector(
-                    onTap: ()=>{print("asd")},
+                    onTap: ()=>onDeliveryWayModal() ,
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 10.0),
                       child: Row(
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                              "Precio",
+                              "Forma de entrega",
                               style: TextStyle(fontSize: 17),
                             ),
                           ),
                           Text(
-                            "S/",
+                            deliveryWay,
                             style: TextStyle(fontSize: 15, color: Colors.grey),
                           ),
                         ],
                       ),
                     ),
                   ),
+                  Divider(),
+                  GestureDetector(
+                    onTap: ()=>onPaymentWayModal() ,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(
+                              "Forma de pago",
+                              style: TextStyle(fontSize: 17),
+                            ),
+                          ),
+                          Text(
+                            paymentWay,
+                            style: TextStyle(fontSize: 15, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Divider(color: Colors.white,),
                 ],
               )
             ),
+            Container(
+              height: 40,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: RaisedButton(
+                      onPressed: uploading ? null : ()=>savePostInfoToFireStore2(),
+                      child: Text(
+                        "Guardar",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                          side: BorderSide(color: Colors.black)),
+                    ),
+                  ),
+                  VerticalDivider(color: Colors.white,),
+                  Expanded(
+                    child: RaisedButton(
+                      onPressed:  uploading ? null : ()=>controlUploadAndSave(),
+                      child: Text(
+                        "Publicar", style: TextStyle(color: Colors.white),),
+                      color: Colors.black,
+                    ),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -397,46 +455,139 @@ class _UploadPageState extends State<UploadPage> {
               title: "Nueva",
               value: 0,
               onChanged: (newValue) => {
-                setState(() => _groupValue = newValue),
+                setState(() => _conditionValue = newValue),
                 Navigator.of(context).pop(),
                 conditionWay = "Nueva"
               },
+              cValue: _conditionValue
             ),
             _myRadioButton(
               title: "Como nueva",
               value: 1,
               onChanged: (newValue) => {
-                setState(() => _groupValue = newValue),
+                setState(() => _conditionValue = newValue),
                 Navigator.of(context).pop(),
                 conditionWay = "Como nueva"
               },
+                cValue: _conditionValue
             ),
             _myRadioButton(
               title: "Usado - Excelente",
               value: 2,
               onChanged: (newValue) => {
-                setState(() => _groupValue = newValue),
+                setState(() => _conditionValue = newValue),
                 Navigator.of(context).pop(),
                 conditionWay = "Como nueva"
               },
+                cValue: _conditionValue
             ),
             _myRadioButton(
               title: "Usado - Buen estado",
               value: 3,
               onChanged: (newValue) => {
-                setState(() => _groupValue = newValue),
+                setState(() => _conditionValue = newValue),
                 Navigator.of(context).pop(),
                 conditionWay = "Usado - Buen estado"
               },
+                cValue: _conditionValue
             ),
             _myRadioButton(
               title: "Usado - Justo",
               value: 4,
               onChanged: (newValue) => {
-                setState(() => _groupValue = newValue),
+                setState(() => _conditionValue = newValue),
                 Navigator.of(context).pop(),
                 conditionWay = "Usado - Justo"
               },
+                cValue: _conditionValue
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  void onDeliveryWayModal() {
+    showModalBottomSheet(context: context, builder: (context) {
+      return Container(
+        height: 250,
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Align(
+                alignment: Alignment.centerLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child:  Text("Forma de entrega", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.left,),
+              ),
+            ),
+            _myRadioButton(
+              title: "Delivery",
+              value: 0,
+              onChanged: (newValue) => {
+                setState(() => _deliveryWayValue = newValue),
+                Navigator.of(context).pop(),
+                deliveryWay = "Delivery"
+              },
+                cValue: _deliveryWayValue
+            ),
+            _myRadioButton(
+              title: "Recojo",
+              value: 1,
+              onChanged: (newValue) => {
+                setState(() => _deliveryWayValue = newValue),
+                Navigator.of(context).pop(),
+                deliveryWay = "Recojo"
+              },
+                cValue: _deliveryWayValue
+            ),
+            _myRadioButton(
+                title: "Delivery y recojo",
+                value: 2,
+                onChanged: (newValue) => {
+                  setState(() => _deliveryWayValue = newValue),
+                  Navigator.of(context).pop(),
+                  deliveryWay = "Delivery y recojo"
+                },
+                cValue: _deliveryWayValue
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  void onPaymentWayModal() {
+    showModalBottomSheet(context: context, builder: (context) {
+      return Container(
+        height: 200,
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Align(
+                alignment: Alignment.centerLeft, // Align however you like (i.e .centerRight, centerLeft)
+                child:  Text("Forma de pago", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.left,),
+              ),
+            ),
+            _myRadioButton(
+                title: "Yape",
+                value: 0,
+                onChanged: (newValue) => {
+                  setState(() => _paymentWayValue = newValue),
+                  Navigator.of(context).pop(),
+                  paymentWay = "Yape"
+                },
+                cValue: _paymentWayValue
+            ),
+            _myRadioButton(
+                title: "Plin",
+                value: 1,
+                onChanged: (newValue) => {
+                  setState(() => _paymentWayValue = newValue),
+                  Navigator.of(context).pop(),
+                  paymentWay = "Plin"
+                },
+                cValue: _paymentWayValue
             ),
           ],
         ),
@@ -518,10 +669,10 @@ class _UploadPageState extends State<UploadPage> {
     });
   }
 
-  Widget _myRadioButton({String title, int value, Function onChanged}) {
+  Widget _myRadioButton({String title, int value, Function onChanged, int cValue}) {
     return RadioListTile(
       value: value,
-      groupValue: _groupValue,
+      groupValue: cValue,
       onChanged: onChanged,
       title: Text(title),
       activeColor: Colors.black,
@@ -534,12 +685,6 @@ class _UploadPageState extends State<UploadPage> {
       child: Padding(
         padding: const EdgeInsets.only(right: 10),
         child: getImageWidget(index)
-        /*Container(
-                width: 100.0,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: FileImage(file), fit: BoxFit.cover)),
-              ),*/
       ),
     );
   }
@@ -567,6 +712,12 @@ class _UploadPageState extends State<UploadPage> {
         )
 
    */
+  
+  void deleteFile(File f){
+    setState(() {
+      f = null;
+    });
+  }
 
   Widget getImageWidget(int index) {
     File f;
@@ -587,12 +738,26 @@ class _UploadPageState extends State<UploadPage> {
     }
 
     if (f != null) {
-      return Image.file(
+      return Container(
+        decoration: new BoxDecoration(color: Colors.white),
+        height: 240,
+        child: Stack(
+          children: <Widget>[
+            Image.file(f,fit: BoxFit.cover),
+            Positioned(
+              top: 2.5, right: 0, //give the values according to your requirement
+              child: GestureDetector(child: Icon(Icons.delete_forever, color: Colors.redAccent,), onTap: ()=>deleteFile(f),)
+              //IconButton(icon: Icon(Icons.delete_forever, color: Colors.redAccent,), onPressed: () {  },),
+            ),
+          ],
+        ),
+      );
+      /*return Image.file(
         f,
         width: 100,
         height: 100,
         fit: BoxFit.cover,
-      );
+      );*/
     } else {
       return Container(
         width: 100.0,
@@ -641,13 +806,45 @@ class _UploadPageState extends State<UploadPage> {
     locationTextEditingController.text = specificAddress;
   }
 
-  compressingPhoto() async{
+  compressingPhoto(int index) async{
     final tDirectory = await getTemporaryDirectory();
     final path = tDirectory.path;
-    ImD.Image mImageFile = ImD.decodeImage(filesito.readAsBytesSync());
-    final compressedImageFile = File('$path/img_$postId.jpg')..writeAsBytesSync(ImD.encodeJpg(mImageFile, quality: 90));
+
+    ImD.Image mImageFile;
+
+    switch(index){
+      case 1:
+        mImageFile = ImD.decodeImage(file1.readAsBytesSync());
+        break;
+      case 2:
+        mImageFile = ImD.decodeImage(file2.readAsBytesSync());
+        break;
+      case 3:
+        mImageFile = ImD.decodeImage(file3.readAsBytesSync());
+        break;
+      case 4:
+        mImageFile = ImD.decodeImage(file4.readAsBytesSync());
+        break;
+    }
+
+    final compressedImageFile = File('$path/img_$postId$index.jpg')..writeAsBytesSync(ImD.encodeJpg(mImageFile, quality: 90));
     setState(() {
-      filesito = compressedImageFile;
+
+      switch(index){
+        case 1:
+          file1 = compressedImageFile;
+          break;
+        case 2:
+          file2 = compressedImageFile;
+          break;
+        case 3:
+          file3 = compressedImageFile;
+          break;
+        case 4:
+          file4 = compressedImageFile;
+          break;
+      }
+
     });
   }
 
@@ -656,40 +853,113 @@ class _UploadPageState extends State<UploadPage> {
       uploading = true;
     });
 
-    await compressingPhoto();
+    var arrayFiles = [];
 
-    String downloadUrl = await uploadPhoto(filesito);
+    if(file1 != null){
+      arrayFiles.add(1);
+    }
+    if(file2 != null){
+      arrayFiles.add(2);
+    }
+    if(file3 != null){
+      arrayFiles.add(3);
+    }
+    if(file4 != null){
+      arrayFiles.add(4);
+    }
+    List<String> arrayPics = [];
 
-    savePostInfoToFireStore(url: downloadUrl, location: locationTextEditingController.text, description: descriptionTextEditingController.text);
+    for (var item in arrayFiles){
+      await compressingPhoto(item);
+
+      String downloadUrl = await uploadPhoto(item);
+
+      arrayPics.add(downloadUrl);
+    }
+
+
+    savePostInfoToFireStore(pics: arrayPics, location: locationTextEditingController.text, description: descriptionTextEditingController.text, category: categorySelected,
+        subcategory: subcategorySelected, condition: conditionWay, price: priceTextEditingController.text, deliveryWay: deliveryWay, payment: paymentWay);
+
 
     locationTextEditingController.clear();
     descriptionTextEditingController.clear();
+    priceTextEditingController.clear();
 
     setState(() {
-      filesito = null;
+      file1 = null;
+      file2 = null;
+      file3 = null;
+      file4 = null;
       uploading = false;
       postId = Uuid().v4();
     });
   }
 
-  Future<String> uploadPhoto(mImageFile) async{
-    StorageUploadTask mStorageUploadTask = storageReference.child("post_$postId.jpg").putFile(mImageFile);
+  Future<String> uploadPhoto(int index) async{
+    File mImageFile;
+
+    switch(index){
+      case 1:
+        mImageFile = file1;
+        break;
+      case 2:
+        mImageFile = file2;
+        break;
+      case 3:
+        mImageFile = file3;
+        break;
+      case 4:
+        mImageFile = file4;
+        break;
+    }
+
+    StorageUploadTask mStorageUploadTask = storageReference.child("post_$postId$index.jpg").putFile(mImageFile);
     StorageTaskSnapshot storageTaskSnapshot = await mStorageUploadTask.onComplete;
     String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
     return downloadUrl;
   }
 
-  savePostInfoToFireStore({String url, String location, String description}){
+  savePostInfoToFireStore({List<String> pics, String location, String description, String category, String subcategory, String condition, String price, String deliveryWay, String payment}){
     postsReference.document(widget.gCurrentUser.id).collection("usersPosts").document(postId).setData({
       "postId": postId,
       "ownerId": widget.gCurrentUser.id,
       "timestamp": DateTime.now(),
       "likes": {},
-      "username": widget.gCurrentUser.username ?? "godi",
+      "username": widget.gCurrentUser.username ?? "no@user",
       "description": description,
       "location": location,
-      "url": url
+      "pics": pics,
+      "category": category,
+      "subcategory": subcategory,
+      "condition": condition,
+      "price": price,
+      "deliveryWay": deliveryWay,
+      "payment": payment
     });
+    //{"likes.$currentOnlineUserId":false}
+  }
+
+  savePostInfoToFireStore2({String url, String location, String description, String category, String subcategory, String condition, String price, String deliveryWay, String payment}){
+    var list = ['1', '2', '3'];
+    postsReference.document(widget.gCurrentUser.id).collection("usersPosts").document(postId).setData({
+      "postId": "123",
+      "ownerId": widget.gCurrentUser.id,
+      "timestamp": DateTime.now(),
+      "likes":list,
+      "username": "no@user",
+      "description": "asd",
+      "location": "asd",
+      "url":"asd",
+      "category": "asd",
+      "subcategory": "asd",
+      "condition": "asd",
+      "price": "asd",
+      "deliveryWay": "asd",
+      "payment": "asd",
+    });
+
+    //{"likes.$currentOnlineUserId":false}
   }
 
   displayUploadFormScreen(){

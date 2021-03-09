@@ -395,8 +395,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }else if(postOrientation == "selling"){
       List<GridTile> gridTilesList = [];
       postsList.forEach((eachPost) {
-        print("each post");
-        print(eachPost.url);
         gridTilesList.add(GridTile(
           child: PostTile(eachPost),
         ));

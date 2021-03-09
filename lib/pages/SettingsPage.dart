@@ -1,5 +1,6 @@
 
 import 'package:artessan_v0/pages/EditProfilePage.dart';
+import 'package:artessan_v0/pages/InterestsPage.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -44,7 +45,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Editar perfil'),
                   ),
                   ListTile(
-                    title: Text('Intereses y tamaños'),
+                    onTap: () => goToInterests(context),
+                    title: Text('Intereses'),
                   ),
                 ]
             ).toList(),
@@ -123,6 +125,14 @@ class _SettingsPageState extends State<SettingsPage> {
         }));
   }
 
+  goToInterests(BuildContext context) async {
+    await Navigator.of(context).push(PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2){
+          return FadeTransition(
+            opacity: animation1,
+            child: InterestsPage(),);
+        }));
+  }
 
 
 }

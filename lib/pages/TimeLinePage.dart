@@ -63,13 +63,10 @@ class _TimeLinePageState extends State<TimeLinePage> {
     collection("userFollowing").getDocuments();
 
     List<Post> allPosts = querySnapshot.documents.map((document) =>Post.fromDocument(document)).toList();
-    List<String> allFollowing =  querySnapshotUsersFollowing.documents.map((document) => document.documentID).toList();
+    /*List<String> allFollowing =  querySnapshotUsersFollowing.documents.map((document) => document.documentID).toList();
 
     querySnapshot.documents.map((document) => print("dsa"));
 
-    allFollowing.map((uid) => {
-      print("dsa")
-    });
 
     querySnapshotUsersFollowing.documents.forEach((document) async {
       QuerySnapshot querySnapshotFolowingPosts = await postsReference.document(document.documentID).
@@ -78,10 +75,11 @@ class _TimeLinePageState extends State<TimeLinePage> {
       followingPosts.forEach((post) {
         allPosts.add(post);
       });
-    });
+    }); */
 
     setState(() {
       this.posts = allPosts;
+      print(this.posts[0].pics[0]);
     });
   }
 

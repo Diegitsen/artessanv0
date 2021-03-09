@@ -10,12 +10,12 @@ class CommentsPage extends StatefulWidget{
 
   final String postId;
   final String postOwnerId;
-  final String postImageUrl;
+  final List<String> pics;
 
-  CommentsPage({this.postId, this.postOwnerId, this.postImageUrl});
+  CommentsPage({this.postId, this.postOwnerId, this.pics});
 
   @override
-  CommentsPageState createState() => CommentsPageState(postId: postId, postOwnerId: postOwnerId, postImageUrl: postImageUrl);
+  CommentsPageState createState() => CommentsPageState(postId: postId, postOwnerId: postOwnerId, pics: pics);
 
 }
 
@@ -23,10 +23,10 @@ class CommentsPageState extends State<CommentsPage>{
 
   final String postId;
   final String postOwnerId;
-  final String postImageUrl;
+  final List<String> pics;
   TextEditingController commentTextEditingController = TextEditingController();
 
-  CommentsPageState({this.postId, this.postOwnerId, this.postImageUrl});
+  CommentsPageState({this.postId, this.postOwnerId, this.pics});
 
   retrieveComments(){
     return StreamBuilder(
@@ -65,7 +65,7 @@ class CommentsPageState extends State<CommentsPage>{
           "userId": currentUser.id,
           "username": currentUser.username,
           "userProfileImg": currentUser.url,
-          "url": postImageUrl,
+          "pics": pics,
           "timestamp": timestamp,
         }
       );

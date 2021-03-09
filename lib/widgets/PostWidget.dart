@@ -6,6 +6,7 @@ import 'package:artessan_v0/pages/CommentsPage.dart';
 import 'package:artessan_v0/pages/HomePage.dart';
 import 'package:artessan_v0/pages/ProfilePage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_pro/carousel_pro.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -19,11 +20,13 @@ class Post extends StatefulWidget {
   final String username;
   final String description;
   final String location;
-  final String url;
+  //final String url;
+  final List<String> pics;
+
 
   const Post({this.postId, this.ownerId,
     this.likes, this.username, this.description,
-    this.location, this.url});
+    this.location, this.pics});
 
   factory Post.fromDocument(DocumentSnapshot documentSnapshot){
     return Post(
@@ -33,7 +36,7 @@ class Post extends StatefulWidget {
       username: documentSnapshot["username"],
       description: documentSnapshot["description"],
       location: documentSnapshot["location"],
-      url: documentSnapshot["url"],
+      pics:  List.from(documentSnapshot['pics']),//documentSnapshot["pics"] as List, // List.from(snapshot['players']),
     );
   }
 
@@ -59,7 +62,7 @@ class Post extends StatefulWidget {
       username: this.username,
       description: this.description,
       location: this.location,
-      url: this.url,
+      pics: this.pics,
       likeCount: getTotalNumberOfLikes(this.likes)
   );
 }
@@ -72,7 +75,7 @@ class _PostState extends State<Post> {
   final String username;
   final String description;
   final String location;
-  final String url;
+  final List<String> pics;
   int likeCount;
   bool isLiked;
   bool showHeart = false;
@@ -80,12 +83,17 @@ class _PostState extends State<Post> {
 
   _PostState({this.postId, this.ownerId,
     this.likes, this.username, this.description,
-    this.location, this.url, this.likeCount});
+    this.location, this.pics, this.likeCount});
 
   @override
   Widget build(BuildContext context) {
 
     isLiked = (likes[currentOnlineUserId] == true);
+    List<NetworkImage> listOfImages = <NetworkImage>[];
+
+    for(var pic in pics){
+      listOfImages.add(NetworkImage(pic));
+    }
 
     return Padding(
       padding: EdgeInsets.only(bottom: 12),
@@ -93,7 +101,7 @@ class _PostState extends State<Post> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           createPostHead(),
-          createPostPicture(),
+          createPostPicture(listOfImages),
           createPostFooter()
         ],
       ),
@@ -218,7 +226,7 @@ class _PostState extends State<Post> {
         "username": currentUser.username,
         "userId": currentUser.id,
         "timestamp": DateTime.now(),
-        "url": url,
+        "pics": pics,
         "postId": postId,
         "userProfileImg": currentUser.url
       });
@@ -258,13 +266,37 @@ class _PostState extends State<Post> {
     }
   }
 
-  createPostPicture(){
+
+  createPostPicture(List<NetworkImage> images){
     return GestureDetector(
       onDoubleTap: ()=>controlUserLikePost,
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          Image.network(url),
+          //Image.network("https://firebasestorage.googleapis.com/v0/b/artessan-54268.appspot.com/o/Posts%20Pictures%2Fpost_623e7d67-c763-4700-b717-c6796861aac81.jpg?alt=media&token=c0618255-8f7c-4da6-b3dc-ac421ddef6d1"),
+          /*Carousel(
+            images: [
+              NetworkImage("https://firebasestorage.googleapis.com/v0/b/artessan-54268.appspot.com/o/Posts%20Pictures%2Fpost_623e7d67-c763-4700-b717-c6796861aac81.jpg?alt=media&token=c0618255-8f7c-4da6-b3dc-ac421ddef6d1"),
+              NetworkImage("https://firebasestorage.googleapis.com/v0/b/artessan-54268.appspot.com/o/Posts%20Pictures%2Fpost_623e7d67-c763-4700-b717-c6796861aac82.jpg?alt=media&token=ca575ea5-f26d-41a4-90c0-5598a8253de6"),
+            ],
+          ),*/
+          SizedBox(
+              height: 400.0,
+              width:  double.infinity,
+              child: Carousel(
+                images: images,
+                dotSize: 4.0,
+                dotSpacing: 15.0,
+                dotColor: Colors.white,
+                indicatorBgPadding: 5.0,
+                dotBgColor: Colors.transparent,
+                borderRadius: false,
+                moveIndicatorFromBottom: 0,
+                noRadiusForIndicator: true,
+                overlayShadow: false,
+                autoplay: false,
+              )
+          ),
           showHeart ? Icon(Icons.favorite, size: 120, color: Colors.pink,) : Text("")
         ],
       ),
@@ -288,7 +320,7 @@ class _PostState extends State<Post> {
             ),
             Padding(padding: EdgeInsets.only(top: 40, left: 10)),
             GestureDetector(
-              onTap: ()=>displayComments(context, postId: postId, ownerId: ownerId, url: url),
+              onTap: ()=>displayComments(context, postId: postId, ownerId: ownerId, pics: pics),
               child: Icon(
                 Icons.chat_bubble_outline,
                 size: 28,
@@ -359,9 +391,9 @@ class _PostState extends State<Post> {
     );
   }
 
-  displayComments(BuildContext context, {String postId, String ownerId, String url}){
+  displayComments(BuildContext context, {String postId, String ownerId, List<String> pics}){
     Navigator.push(context, MaterialPageRoute(builder: (context){
-      return CommentsPage(postId: postId, postOwnerId: ownerId, postImageUrl: url);
+      return CommentsPage(postId: postId, postOwnerId: ownerId, pics: pics);
     }));
   }
 

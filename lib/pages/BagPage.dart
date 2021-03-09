@@ -29,7 +29,4 @@ class _BagPageState extends State<BagPage> {
     );
   }
 
-
-
-
 }
