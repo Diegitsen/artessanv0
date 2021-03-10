@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:artessan_v0/models/brand.dart';
 import 'package:artessan_v0/models/style.dart';
+import 'package:artessan_v0/pages/EditStylesPage.dart';
 import 'package:artessan_v0/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,24 +32,32 @@ class _BagPageState extends State<InterestsPage> {
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(children: <Widget>[
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
+          Row(children: <Widget>[
+            Expanded(
+                child: Text(
               "Estilos",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               textAlign: TextAlign.left,
-            ),
-          ),
+            )),
+            GestureDetector(
+                onTap: ()=>goToEditStyles(context),
+                child: Text("editar estilos",
+                    style: TextStyle(color: Colors.redAccent)))
+          ]),
           showStyles(),
           Divider(),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Marcas",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              textAlign: TextAlign.left,
-            ),
-          ),
+          Row(children: <Widget>[
+            Expanded(
+                child: Text(
+                  "Marcas",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  textAlign: TextAlign.left,
+                )),
+            GestureDetector(
+                onTap: ()=>{},
+                child: Text("editar marcas",
+                    style: TextStyle(color: Colors.redAccent)))
+          ]),
           showBrands(),
           Divider(),
         ]),
@@ -86,6 +95,15 @@ class _BagPageState extends State<InterestsPage> {
         ));
   }
 
+  goToEditStyles(BuildContext context) async {
+    await Navigator.of(context).push(PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2){
+          return FadeTransition(
+            opacity: animation1,
+            child: EditStylesPage(),);
+        }));
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -117,11 +135,8 @@ class _BagPageState extends State<InterestsPage> {
 
   retrieveStyles() async{
 
-    QuerySnapshot querySnapshot = await tagsReference.document("styles").collection("styles").getDocuments();
-
-
+    QuerySnapshot querySnapshot = await userTagsReference.document(currentUser.id).collection("styles").getDocuments();
     List<Style> styles = querySnapshot.documents.map((document) =>Style.fromDocument(document)).toList();
-
     setState(() {
       this.styles = styles;
     });

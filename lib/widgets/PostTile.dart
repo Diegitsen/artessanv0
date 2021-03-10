@@ -19,11 +19,12 @@ class PostTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: ()=>displayFullPost(context),
-      child: Carousel(
+      child: Image.network(post.pics[0]),
+      /*Carousel(
         images: [
           NetworkImage(post.pics[0])
         ],
-      ),
+      ),*/
       //Image.network(post.url),
     );
   }

@@ -14,7 +14,7 @@ class User {
     this.username,
     this.url,
     this.email,
-    this.bio,
+    this.bio
   });
 
   factory User.fromDocument(DocumentSnapshot doc) {
@@ -24,7 +24,7 @@ class User {
       username: doc['username'],
       url: doc['url'],
       profileName: doc['profileName'],
-      bio: doc['bio'],
+      bio: doc['bio']
     );
   }
 }

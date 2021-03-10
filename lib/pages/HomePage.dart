@@ -26,6 +26,7 @@ final followingReference = Firestore.instance.collection("following");
 final timelineReference = Firestore.instance.collection("timeline");
 final tagsReference = Firestore.instance.collection("tags");
 final stylesReference = Firestore.instance.collection("styles");
+final userTagsReference = Firestore.instance.collection("user_tags");
 
 
 User currentUser;
