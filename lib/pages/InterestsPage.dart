@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:artessan_v0/models/brand.dart';
 import 'package:artessan_v0/models/style.dart';
+import 'package:artessan_v0/pages/EditBrandsPage.dart';
 import 'package:artessan_v0/pages/EditStylesPage.dart';
 import 'package:artessan_v0/pages/HomePage.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class _BagPageState extends State<InterestsPage> {
                   textAlign: TextAlign.left,
                 )),
             GestureDetector(
-                onTap: ()=>{},
+                onTap: ()=>goToEditBrands(context),
                 child: Text("editar marcas",
                     style: TextStyle(color: Colors.redAccent)))
           ]),
@@ -101,6 +102,15 @@ class _BagPageState extends State<InterestsPage> {
           return FadeTransition(
             opacity: animation1,
             child: EditStylesPage(),);
+        }));
+  }
+
+  goToEditBrands(BuildContext context) async {
+    await Navigator.of(context).push(PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2){
+          return FadeTransition(
+            opacity: animation1,
+            child: EditBrandsPage(),);
         }));
   }
 

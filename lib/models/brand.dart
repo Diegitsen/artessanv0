@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Brand {
-  final int id;
+  String id;
   final String name;
+  bool isSelected;
 
   Brand({
-    this.id,
+    this.id = "",
     this.name,
+    this.isSelected = false
   });
 
   factory Brand.fromDocument(DocumentSnapshot doc) {
