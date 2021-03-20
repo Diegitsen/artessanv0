@@ -2,6 +2,7 @@ import 'package:artessan_v0/models/user.dart';
 import 'package:artessan_v0/pages/HomePage.dart';
 import 'package:artessan_v0/pages/NotificationsPage.dart';
 import 'package:artessan_v0/pages/SettingsPage.dart';
+import 'package:artessan_v0/widgets/ArtJournalWidget.dart';
 import 'package:artessan_v0/widgets/HeaderWidget.dart';
 import 'package:artessan_v0/widgets/PostTile.dart';
 import 'package:artessan_v0/widgets/PostWidget.dart';
@@ -24,7 +25,9 @@ class _ProfilePageState extends State<ProfilePage> {
   final String currentOnlineUserId = currentUser?.id;
   bool loading = false;
   int countPost = 0;
+  int countJournal = 0;
   List<Post> postsList = [];
+  List<Journal> journalList = [];
   String postOrientation = "selling";
   int countTotalFollowers = 0;
   int countTotalFollowings = 0;
@@ -35,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
     getAllFollowers();
     getAllFollowings();
     checkIfAlreadyFollowing();
+    getArtJournals();
   }
 
   getAllFollowings() async{
@@ -229,7 +233,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: FlatButton(
         onPressed: performFunction,
         child: Container(
-          width: 245,
+          width: 200,
           height: 35,
           child: Text(title, style: TextStyle(color: following ? Colors.white : Colors.black, fontWeight: FontWeight.bold),),
           alignment: Alignment.center,
@@ -413,6 +417,14 @@ class _ProfilePageState extends State<ProfilePage> {
       return Column(
         children: postsList,
       );
+    }else if(postOrientation == "saved"){
+      return Column(
+        children: postsList,
+      );
+    }else if(postOrientation == "journal"){
+      return Column(
+        children: journalList,
+      );
     }
   }
 
@@ -422,31 +434,64 @@ class _ProfilePageState extends State<ProfilePage> {
       children: <Widget>[
         FlatButton(
           onPressed: () => setOrientation("selling"),
-          child: Text(
+          child: Icon(
+            Icons.image,
+            color: postOrientation=="selling" ? Colors.black : Colors.grey,
+          )
+        ),
+        /*
+        Text(
             "Vendiendo",
             style: TextStyle(
               fontWeight: postOrientation=="selling" ? FontWeight.bold :  FontWeight.normal,
             ),
           ),
-        ),
+         */
         FlatButton(
           onPressed: () => setOrientation("likes"),
-          child: Text(
+          child: Icon(
+            Icons.favorite,
+            color: postOrientation=="likes" ? Colors.black : Colors.grey,
+          ),
+        ),
+        /*
+        Text(
               "Gustados",
               style: TextStyle(
                 fontWeight: postOrientation=="likes" ? FontWeight.bold :  FontWeight.normal,
              ),
-          ),
-        ),
+          )
+         */
         FlatButton(
           onPressed: () => setOrientation("saved"),
-          child: Text(
+          child: Icon(
+            Icons.bookmark,
+            color: postOrientation=="saved" ? Colors.black : Colors.grey,
+          ),
+        ),
+        /*
+        Text(
               "Guardados",
                style: TextStyle(
                 fontWeight: postOrientation=="saved" ? FontWeight.bold :  FontWeight.normal,
               ),
           ),
+         */
+        FlatButton(
+          onPressed: () => setOrientation("journal"),
+          child: Icon(
+            Icons.book,
+            color: postOrientation=="journal" ? Colors.black : Colors.grey,
+          ),
         ),
+        /*
+        Text(
+            "Diario",
+            style: TextStyle(
+              fontWeight: postOrientation=="journal" ? FontWeight.bold :  FontWeight.normal,
+            ),
+          ),
+         */
       ],
     );
   }
@@ -472,26 +517,24 @@ class _ProfilePageState extends State<ProfilePage> {
 
   }
 
+  getArtJournals() async{
+    print("hey!!");
+    setState(() {
+      loading = true;
+    });
+
+    QuerySnapshot querySnapshot = await postsReference.document(widget.userProfileId).collection("artJournal").orderBy("timestamp", descending: true).getDocuments();
+
+    setState(() {
+      loading = false;
+      countJournal = querySnapshot.documents.length;
+      journalList = querySnapshot.documents.map((documentSnapshot) => Journal.fromDocument(documentSnapshot)).toList();
+      for(var i in journalList){
+        print(i.title);
+      }
+    });
+
+  }
+
 }
 
-/*
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            createColumns("posts", 0),
-                            createColumns("followers", 0),
-                            createColumns("following", 0),
-                          ],
-                        ),
-
-             Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(top: 13),
-                child: Text(
-                  user.username, style: TextStyle(fontSize: 14, color: Colors.black),
-                ),
-              ),
-
-
- */

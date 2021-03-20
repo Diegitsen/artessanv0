@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>529007239990-itklk74m0k3761rrot018r21optj7po0.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.529007239990-itklk74m0k3761rrot018r21optj7po0</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>529007239990-hr33sf0sps6jvej6052eg2u8bp889l74.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDyVa9YHNnrSYweRXVwPmuvV-kBhTPS7_U</string>
+	<key>GCM_SENDER_ID</key>
+	<string>529007239990</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.diegitsen.artessanv0</string>
+	<key>PROJECT_ID</key>
+	<string>artessan-54268</string>
+	<key>STORAGE_BUCKET</key>
+	<string>artessan-54268.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:529007239990:ios:31d1bee833d4eb950e8997</string>
+</dict>
+</plist>

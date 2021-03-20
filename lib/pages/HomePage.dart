@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage>{
     gSignIn.signInSilently(suppressErrors: false).then((gSigninAccount){
       controlSignIn(gSigninAccount);
     }).catchError((gError){
-      print("Error message: " + gError);
+      print("Error message: " + gError.toString());
     });
   }
 
